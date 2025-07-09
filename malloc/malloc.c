@@ -41,9 +41,6 @@ typedef struct my_heap_t
 //
 my_heap_t my_heap;
 
-// binの定義
-my_metadata_t *free_bins[BIN_COUNT];
-
 //
 // Helper functions (feel free to add/remove/edit!)
 //
