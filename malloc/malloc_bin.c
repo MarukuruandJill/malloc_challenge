@@ -16,6 +16,7 @@
 
 #define BIN_COUNT 4
 #define BIN_WIDTH 1000
+#define PAGE_SIZE 4096
 //
 // Interfaces to get memory pages from OS
 //
@@ -45,7 +46,7 @@ typedef struct my_heap_t
 my_heap_t my_heap;
 
 // binの定義
-my_metadata_t *free_bins[BIN_COUNT];
+my_heap_t *bins[BIN_COUNT];
 
 //
 // Helper functions (feel free to add/remove/edit!)
@@ -66,8 +67,8 @@ int get_bin_index(size_t size)
 void my_add_to_free_list(my_metadata_t *metadata)
 {
     int index = get_bin_index(metadata->size);
-    metadata->next = bins[index].free_head;
-    bins[index].free_head = metadata;
+    metadata->next = bins[index]->free_head;
+    bins[index]->free_head = metadata;
 }
 
 // free listから削除
@@ -79,7 +80,7 @@ void my_remove_from_free_list(my_metadata_t *target, my_metadata_t *prev, int in
     }
     else
     {
-        bins[index].free_head = target->next;
+        bins[index]->free_head = target->next;
     }
 }
 
@@ -104,6 +105,8 @@ void *my_malloc(size_t size)
     my_metadata_t *best_fit = NULL;
     my_metadata_t *best_fit_prev = NULL;
     int best_fit_index = -1;
+
+    printf("要求サイズ:  %zu", size);
 
     // 必要なサイズから探索する最初のbinのindexを返す
     int start_index = get_bin_index(size);
@@ -133,7 +136,7 @@ void *my_malloc(size_t size)
     // bins[start_index]だけ探索するコード
     // 結果：971,70,639,40,780,51,7912,72,4253,75
 
-    my_metadata_t *metadata = bins[start_index].free_head;
+    my_metadata_t *metadata = bins[start_index]->free_head;
     my_metadata_t *prev = NULL;
     while (metadata)
     {
